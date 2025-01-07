@@ -8,5 +8,5 @@ TO INSTALL:
 - npm install -g @vscode/vsce 
 - vsce package
 - add your openai-debugger-*.vsix in vscode 
-- in VSCode select your code and make CTRL+SHIFT+P to open th epalette control
+- in VSCode select your code and make CTRL+SHIFT+P to open the palette control
 - Search 'openai debugger' and digit in the prompt
