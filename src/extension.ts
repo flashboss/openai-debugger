@@ -1,6 +1,6 @@
 
 import * as vscode from 'vscode';
-import axios from 'axios'; // API di OpenAI
+import axios from 'axios'; // Calling API OpenAI
 
 export function activate(context: vscode.ExtensionContext) {
     const addBreakpointsCommand = vscode.commands.registerCommand('openaiDebugger.addBreakpoints', async () => {
