@@ -1,4 +1,3 @@
-out
 package-lock.json
 *.vsix
 node_modules
