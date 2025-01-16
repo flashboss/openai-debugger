@@ -1,3 +1,5 @@
-package-lock.json
+#package-lock.json
 *.vsix
-node_modules
+#node_modules
+.gitignore
+.vscode
