@@ -81,10 +81,8 @@ async function verifyApiKey(apiKey: string): Promise<boolean> {
             }
         );
         
-        // Se la risposta è valida, la chiave è corretta
         return response.status === 200;
     } catch (error) {
-        // Se c'è un errore, la chiave non è valida
         return false;
     }
 }
