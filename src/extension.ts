@@ -71,8 +71,10 @@ export function activate(context: vscode.ExtensionContext) {
 async function verifyApiKey(apiKey: string): Promise<boolean> {
     try {
         const response = await axios.post(
-            'https://api.openai.com/v1/models',
-            {},
+            'https://api.openai.com/v1/chat/completions',
+            {
+                model: 'gpt-4o-mini',
+            },
             {
                 headers: {
                     Authorization: `Bearer ${apiKey}`,
