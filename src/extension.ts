@@ -19,6 +19,17 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
 
+            try {
+                const isValidApiKey = await verifyApiKey(apiKey);
+                if (!isValidApiKey) {
+                    vscode.window.showErrorMessage('Invalid API key. Please enter a valid key.');
+                    return;
+                }
+            } catch (error) {
+                vscode.window.showErrorMessage('Error verifying API key.');
+                return;
+            }
+
             // Salva l'API key nel global state per utilizzi futuri
             await context.globalState.update('openaiApiKey', apiKey);
             vscode.window.showInformationMessage('API key has been saved.');
@@ -55,6 +66,27 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(addBreakpointsCommand);
+}
+
+async function verifyApiKey(apiKey: string): Promise<boolean> {
+    try {
+        const response = await axios.post(
+            'https://api.openai.com/v1/models',
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        
+        // Se la risposta è valida, la chiave è corretta
+        return response.status === 200;
+    } catch (error) {
+        // Se c'è un errore, la chiave non è valida
+        return false;
+    }
 }
 
 async function analyzeCodeWithOpenAI(prompt: string, code: string, apiKey: string): Promise<number[]> {
