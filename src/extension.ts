@@ -4,6 +4,26 @@ import axios from 'axios'; // Calling API OpenAI
 
 export function activate(context: vscode.ExtensionContext) {
     const addBreakpointsCommand = vscode.commands.registerCommand('openaiDebugger.addBreakpoints', async () => {
+
+        let apiKey = context.globalState.get<string>('openaiApiKey');
+        
+        // Se non c'è una API key salvata, richiedila all'utente
+        if (!apiKey) {
+            apiKey = await vscode.window.showInputBox({
+                prompt: 'Please enter your OpenAI API key',
+                password: true, // Mostra come password per sicurezza
+            });
+
+            if (!apiKey) {
+                vscode.window.showErrorMessage('API key is required.');
+                return;
+            }
+
+            // Salva l'API key nel global state per utilizzi futuri
+            await context.globalState.update('openaiApiKey', apiKey);
+            vscode.window.showInformationMessage('API key has been saved.');
+        }
+
         const prompt = await vscode.window.showInputBox({
             prompt: 'Tell me what do you need to add as breakpoint',
         });
@@ -23,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Running analysis code...');
 
         try {
-            const breakpoints = await analyzeCodeWithOpenAI(prompt, code);
+            const breakpoints = await analyzeCodeWithOpenAI(prompt, code, apiKey);
             addBreakpointsToDebugger(editor, breakpoints);
         } catch (error) {
             if (error instanceof Error) {
@@ -37,8 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(addBreakpointsCommand);
 }
 
-async function analyzeCodeWithOpenAI(prompt: string, code: string): Promise<number[]> {
-    const apiKey = 'ADD_YOUR_OPENAPI_KEY'; // Read from secure configuration
+async function analyzeCodeWithOpenAI(prompt: string, code: string, apiKey: string): Promise<number[]> {
     const response = await axios.post(
         'https://api.openai.com/v1/chat/completions',
         {
