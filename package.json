@@ -1,7 +1,7 @@
 {
     "name": "openai-debugger",
     "displayName": "OpenAI Debugger",
-    "description": "Estendi il debugger di VS Code utilizzando OpenAI per aggiungere automaticamente breakpoint basati su un prompt.",
+    "description": "Extend the VS Code debugger using OpenAI to automatically add breakpoints based on a prompt.",
     "version": "1.0.0",
     "publisher": "flashboss",
     "engines": {
