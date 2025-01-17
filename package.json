@@ -4,7 +4,7 @@
     "description": "Extend the VS Code debugger using OpenAI to automatically add breakpoints based on a prompt.",
     "version": "1.0.0",
     "publisher": "flashboss",
-    "icon": "flashboss.jpeg",
+    "icon": "vige.png",
     "engines": {
         "vscode": "^1.78.0"
     },
