@@ -4,14 +4,12 @@ import axios from 'axios'; // Calling API OpenAI
 
 export function activate(context: vscode.ExtensionContext) {
     const addBreakpointsCommand = vscode.commands.registerCommand('openaiDebugger.addBreakpoints', async () => {
-
         let apiKey = context.globalState.get<string>('openaiApiKey');
         
-        // Se non c'è una API key salvata, richiedila all'utente
         if (!apiKey) {
             apiKey = await vscode.window.showInputBox({
                 prompt: 'Please enter your OpenAI API key',
-                password: true, // Mostra come password per sicurezza
+                password: true,
             });
 
             if (!apiKey) {
@@ -21,8 +19,17 @@ export function activate(context: vscode.ExtensionContext) {
 
             try {
                 const isValidApiKey = await verifyApiKey(apiKey);
-                if (!isValidApiKey) {
-                    vscode.window.showErrorMessage('Invalid API key. Please enter a valid key.');
+                if (!isValidApiKey.valid) {
+                    const errorMessage = isValidApiKey.error || 'Unknown error occurred.';
+                    let formattedMessage: string;
+                    if (typeof errorMessage === 'object' && errorMessage !== null && 'message' in errorMessage) {
+                      formattedMessage = (errorMessage as { message: string }).message;
+                    } else if (typeof errorMessage === 'object') {
+                      formattedMessage = JSON.stringify(errorMessage, null, 2);
+                    } else {
+                      formattedMessage = errorMessage as string;
+                    }
+                    vscode.window.showErrorMessage(formattedMessage);
                     return;
                 }
             } catch (error) {
@@ -30,7 +37,6 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
 
-            // Salva l'API key nel global state per utilizzi futuri
             await context.globalState.update('openaiApiKey', apiKey);
             vscode.window.showInformationMessage('API key has been saved.');
         }
@@ -68,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(addBreakpointsCommand);
 }
 
-async function verifyApiKey(apiKey: string): Promise<boolean> {
+async function verifyApiKey(apiKey: string): Promise<{ valid: boolean; error?: string }> {
     try {
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',
@@ -82,10 +88,28 @@ async function verifyApiKey(apiKey: string): Promise<boolean> {
                 },
             }
         );
-        
-        return response.status === 200;
-    } catch (error) {
-        return false;
+
+        // Se la risposta ha successo, ritorna che l'API key è valida
+        return { valid: true };
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            const apiError = error.response?.data?.error;
+            return {
+                valid: false,
+                error: apiError || 'Unknown API error occurred.',
+            };
+        } else if (error instanceof Error) {
+            return {
+                valid: false,
+                error: error.message,
+            };
+        } else {
+            // Caso di errore sconosciuto
+            return {
+                valid: false,
+                error: 'An unexpected error occurred.',
+            };
+        }
     }
 }
 

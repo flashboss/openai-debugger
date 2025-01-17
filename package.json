@@ -12,14 +12,15 @@
     ],
     "main": "./out/extension.js",
     "scripts": {
-        "vscode:prepublish": "tsc -p ./"
+        "vscode:prepublish": "tsc -p ./",
+        "watch": "tsc --watch"
     },
     "devDependencies": {
         "@types/vscode": "^1.78.0",
         "typescript": "^4.9.5"
     },
     "dependencies": {
-        "axios": "^0.24.0"
+        "axios": "^1.7.9"
     },
     "contributes": {
         "commands": [
@@ -28,5 +29,9 @@
                 "title": "OpenAI Debugger: Add Breakpoint"
             }
         ]
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/flashboss/openai-debugger.git"
     }
 }
