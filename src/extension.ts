@@ -56,7 +56,14 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        const code = editor.document.getText();
+        const document = editor.document;
+        const linesWithNumbers = [];
+
+        for (let i = 0; i < document.lineCount; i++) {
+            const line = document.lineAt(i);
+            linesWithNumbers.push(`${i + 1}: ${line.text}`);
+        }
+        const code = linesWithNumbers.join('\n');
         vscode.window.showInformationMessage('Running analysis code...');
 
         try {
@@ -118,7 +125,7 @@ async function analyzeCodeWithOpenAI(prompt: string, code: string, apiKey: strin
         {
             model: 'gpt-4o-mini',
             messages: [
-                { role: 'system', content: 'You are an assistant debugger AI.' },
+                { role: 'system', content: 'You are an assistant debugger AI. Just return me the line numbers of the code I send you as requested by my prompt preceded by the word line. Exclude lines where breakpoint cannot be set' },
                 { role: 'user', content: `${prompt}\n\nCode:\n${code}` },
             ],
         },
@@ -152,7 +159,7 @@ function addBreakpointsToDebugger(editor: vscode.TextEditor, lines: number[]) {
         return new vscode.SourceBreakpoint(location);
     });
 
-    debugConfig.breakpoints = [...debugConfig.breakpoints, ...breakpoints];
+    debugConfig.addBreakpoints(breakpoints);
     vscode.window.showInformationMessage(`Added ${lines.length} breakpoint.`);
 }
 
