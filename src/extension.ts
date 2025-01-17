@@ -89,7 +89,6 @@ async function verifyApiKey(apiKey: string): Promise<{ valid: boolean; error?: s
             }
         );
 
-        // Se la risposta ha successo, ritorna che l'API key è valida
         return { valid: true };
     } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
