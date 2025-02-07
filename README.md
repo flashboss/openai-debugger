@@ -8,4 +8,6 @@ TO INSTALL:
 - vsce package
 - add your openai-debugger-*.vsix in vscode 
 - in VSCode select your code and make CTRL+SHIFT+P to open the palette control
-- Search 'openai debugger' and digit in the prompt
+- Search 'openai debugger'
+- For the first time digit in the prompt a correct OpenAI Key
+- Write your command in the prompt
